@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'widgets/ad_slider.dart';
 import 'models/media_info.dart';
 import 'services/media_extractor.dart';
@@ -20,8 +21,48 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _urlController = TextEditingController();
   bool _isLoading = false;
   final Map<String, double> _downloadProgress = {};
+  final Map<String, String> _urlToTaskId = {};
   final Set<String> _downloadingUrls = {};
   List<MediaInfo> _results = [];
+
+  @override
+  void initState() {
+    super.initState();
+    DownloaderService.addListener(_onDownloadUpdate);
+  }
+
+  @override
+  void dispose() {
+    DownloaderService.removeListener(_onDownloadUpdate);
+    super.dispose();
+  }
+
+  void _onDownloadUpdate(String id, DownloadTaskStatus status, int progress) {
+    if (!mounted) return;
+
+    setState(() {
+      String? targetUrl;
+      _urlToTaskId.forEach((url, taskId) {
+        if (taskId == id) targetUrl = url;
+      });
+
+      if (targetUrl != null) {
+        _downloadProgress[targetUrl!] = progress / 100;
+
+        if (status == DownloadTaskStatus.complete) {
+          _downloadingUrls.remove(targetUrl);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Saved to Gallery!')),
+          );
+        } else if (status == DownloadTaskStatus.failed) {
+          _downloadingUrls.remove(targetUrl);
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Download failed.')),
+          );
+        }
+      }
+    });
+  }
 
   void _processLink() async {
     final url = _urlController.text.trim();
@@ -89,24 +130,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final fileName = 'Nexus_${DateTime.now().millisecondsSinceEpoch}.$extension';
 
-    await DownloaderService.downloadFile(
+    final taskId = await DownloaderService.downloadFile(
       url: media.url!,
       fileName: fileName,
       isVideo: media.type == MediaType.video,
-      onProgress: (count, total) {
-        if (total > 0 && mounted) {
-          setState(() {
-            _downloadProgress[media.url!] = count / total;
-          });
-        }
-      },
-      onSuccess: (path) {
+      onSuccess: (message) {
         if (!mounted) return;
-        setState(() {
-          _downloadingUrls.remove(media.url);
-        });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Saved to Gallery!')),
+          SnackBar(content: Text(message)),
         );
       },
       onError: (error) {
@@ -119,6 +150,12 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
+
+    if (taskId != null) {
+      setState(() {
+        _urlToTaskId[media.url!] = taskId;
+      });
+    }
   }
 
   @override
