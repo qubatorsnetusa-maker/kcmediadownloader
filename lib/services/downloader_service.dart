@@ -1,17 +1,71 @@
 import 'dart:io';
-import 'package:dio/dio.dart';
+import 'dart:isolate';
+import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:gal/gal.dart';
 import 'package:path/path.dart' as p;
+import 'package:flutter_downloader/flutter_downloader.dart';
+import 'notification_service.dart';
 
 class DownloaderService {
-  static final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 15),
-    receiveTimeout: const Duration(seconds: 60),
-    followRedirects: true,
-  ));
+  static final ReceivePort _port = ReceivePort();
+
+  static void initialize() {
+    IsolateNameServer.registerPortWithName(
+        _port.sendPort, 'downloader_send_port');
+    _port.listen((dynamic data) {
+      String id = data[0];
+      DownloadTaskStatus status = DownloadTaskStatus.fromInt(data[1]);
+      int progress = data[2];
+
+      if (status == DownloadTaskStatus.complete) {
+        _handleDownloadComplete(id);
+      }
+    });
+
+    FlutterDownloader.registerCallback(downloadCallback);
+  }
+
+  @pragma('vm:entry-point')
+  static void downloadCallback(String id, int status, int progress) {
+    final SendPort? send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send?.send([id, status, progress]);
+  }
+
+  static Future<void> _handleDownloadComplete(String taskId) async {
+    final tasks = await FlutterDownloader.loadTasksWithRawQuery(
+        query: "SELECT * FROM task WHERE task_id = '$taskId'");
+    if (tasks == null || tasks.isEmpty) return;
+
+    final task = tasks.first;
+    final filePath = p.join(task.savedDir, task.filename);
+
+    try {
+      // Save to Gallery
+      final isVideo = task.filename?.toLowerCase().endsWith('.mp4') ?? false;
+      if (isVideo) {
+        await Gal.putVideo(filePath);
+      } else {
+        await Gal.putImage(filePath);
+      }
+
+      // Show notification
+      await NotificationService.showDownloadCompleteNotification(
+        fileName: task.filename ?? 'Media',
+      );
+
+      // Clean up temp file
+      final file = File(filePath);
+      if (await file.exists()) {
+        await file.delete();
+      }
+    } catch (e) {
+      debugPrint('Error handling download completion: $e');
+    }
+  }
 
   static Future<bool> checkInternet() async {
     final connectivityResult = await (Connectivity().checkConnectivity());
@@ -30,73 +84,38 @@ class DownloaderService {
     required Function(String) onError,
   }) async {
     try {
-      // 0. Check Internet
       if (!await checkInternet()) {
-        onError('No internet connection. Please check your network settings.');
+        onError('No internet connection.');
         return;
       }
 
-      // 1. Check Gallery Access
       final hasAccess = await Gal.hasAccess(toAlbum: true);
       if (!hasAccess) {
         final granted = await Gal.requestAccess(toAlbum: true);
         if (!granted) {
-          onError('Gallery access denied. Please enable it in Settings.');
+          onError('Gallery access denied.');
           return;
         }
       }
 
-      // 2. Get temp directory for downloading
       final tempDir = await getTemporaryDirectory();
-      final tempPath = p.join(tempDir.path, fileName);
 
-      // 3. Download the file
-      await _dio.download(
-        url,
-        tempPath,
-        onReceiveProgress: (count, total) {
-          if (onProgress != null && total > 0) {
-            onProgress(count, total);
-          }
-        },
+      final taskId = await FlutterDownloader.enqueue(
+        url: url,
+        savedDir: tempDir.path,
+        fileName: fileName,
+        showNotification: true,
+        openFileFromNotification: false,
+        saveInPublicStorage: false,
       );
 
-      // Verify file exists and has size
-      final file = File(tempPath);
-      if (!await file.exists() || await file.length() == 0) {
-        throw Exception('Downloaded file is empty or missing.');
-      }
-
-      // 4. Save to Gallery
-      if (isVideo) {
-        await Gal.putVideo(tempPath);
+      if (taskId != null) {
+        onSuccess('Download started in background...');
       } else {
-        await Gal.putImage(tempPath);
+        onError('Could not start download.');
       }
-
-      // 5. Clean up
-      try {
-        if (await file.exists()) {
-          await file.delete();
-        }
-      } catch (_) {}
-
-      onSuccess('Saved to Gallery');
-    } catch (e, stack) {
-      debugPrint('Download Error: $e');
-      debugPrint(stack.toString());
-
-      if (e is GalException) {
-        final type = e.type.name;
-        String message = 'Gallery Error: $type';
-        if (type == 'accessDenied') message = 'Please grant Gallery permissions in your phone settings.';
-        if (type == 'notSupported') message = 'This file format is not supported by your gallery.';
-        onError(message);
-      } else if (e is DioException) {
-        onError('Network Error: ${e.message ?? 'Unknown connection issue'}');
-      } else {
-        onError('Error: ${e.toString()}');
-      }
+    } catch (e) {
+      onError('Error: ${e.toString()}');
     }
   }
 }

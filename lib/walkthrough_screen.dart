@@ -29,8 +29,8 @@ class WalkthroughScreen extends StatelessWidget {
           pages: [
             _buildPage(
               context,
-              "Welcome to KC Downloader",
-              "The easiest way to download media from KingsChat and CeFlix.",
+              "Welcome to Nexus Media Downloader",
+              "The easiest way to download media files online.",
               Icons.download_for_offline,
               Colors.blue,
             ),
@@ -76,8 +76,16 @@ class WalkthroughScreen extends StatelessWidget {
     return PageViewModel(
       title: title,
       body: body,
-      image: Center(child: Icon(icon, size: 175, color: color.withValues(alpha: 0.8))),
+      image: Center(
+        child: Padding(
+          padding: const EdgeInsets.only(top: 40.0),
+          child: Icon(icon, size: 120, color: color.withValues(alpha: 0.8)),
+        ),
+      ),
       decoration: PageDecoration(
+        imagePadding: const EdgeInsets.only(bottom: 0),
+        titlePadding: const EdgeInsets.only(top: 20, bottom: 16),
+        bodyPadding: const EdgeInsets.symmetric(horizontal: 24),
         titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: Colors.blueGrey[900], letterSpacing: -0.5),
         bodyTextStyle: TextStyle(fontSize: 18.0, color: Colors.blueGrey[700], fontWeight: FontWeight.w500),
         pageColor: Colors.transparent,

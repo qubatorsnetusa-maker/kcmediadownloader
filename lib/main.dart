@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'services/remote_config_service.dart';
+import 'services/notification_service.dart';
+import 'services/downloader_service.dart';
 import 'home_screen.dart';
 import 'walkthrough_screen.dart';
 import 'legal_disclaimer_screen.dart';
@@ -11,28 +14,32 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await RemoteConfigService().initialize();
+  await FlutterDownloader.initialize(debug: true);
+  await NotificationService.initialize();
+  DownloaderService.initialize();
 
   // Request essential permissions on startup
   await [
     Permission.storage,
     Permission.photos,
     Permission.videos,
+    Permission.notification,
   ].request();
 
   final prefs = await SharedPreferences.getInstance();
   final showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
   final hasAcceptedLegal = prefs.getBool('hasAcceptedLegal') ?? false;
 
-  runApp(KCMediaDownloaderApp(
+  runApp(NexusMediaDownloaderApp(
     showWalkthrough: showWalkthrough,
     hasAcceptedLegal: hasAcceptedLegal,
   ));
 }
 
-class KCMediaDownloaderApp extends StatelessWidget {
+class NexusMediaDownloaderApp extends StatelessWidget {
   final bool showWalkthrough;
   final bool hasAcceptedLegal;
-  const KCMediaDownloaderApp({
+  const NexusMediaDownloaderApp({
     super.key,
     required this.showWalkthrough,
     required this.hasAcceptedLegal,

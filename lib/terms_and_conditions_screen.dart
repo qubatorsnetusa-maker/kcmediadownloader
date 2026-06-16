@@ -61,6 +61,10 @@ class TermsAndConditionsScreen extends StatelessWidget {
                           '5. Links',
                           'The developers have not reviewed all of the sites linked to its app and are not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by the developers of the site.',
                         ),
+                        _buildSection(
+                          '6. Privacy Policy',
+                          'We respect your privacy. This application does not collect, store, or share any personal data from its users. Any media downloaded is processed locally on your device and saved directly to your gallery. We do not have access to your files or download history. We may use anonymous device identifiers and cloud-based configuration services to provide a better and more up-to-date user experience.',
+                        ),
                         const SizedBox(height: 32),
                         const Center(
                           child: Text(

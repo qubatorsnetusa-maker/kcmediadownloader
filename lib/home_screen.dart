@@ -87,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
       }
     } catch (_) {}
 
-    final fileName = 'KC_${DateTime.now().millisecondsSinceEpoch}.$extension';
+    final fileName = 'Nexus_${DateTime.now().millisecondsSinceEpoch}.$extension';
 
     await DownloaderService.downloadFile(
       url: media.url!,
@@ -132,10 +132,10 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
                 child: Text(
                   'Nexus Media Downloader',
-                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.blueGrey[900],
                     letterSpacing: -0.5,

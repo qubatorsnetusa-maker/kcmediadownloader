@@ -1,6 +1,6 @@
 {
-    "name": "kc_media_downloader",
-    "short_name": "kc_media_downloader",
+    "name": "nexus_media_downloader",
+    "short_name": "nexus_media_downloader",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "375372672536",
-    "project_id": "kc-media-downloader",
-    "storage_bucket": "kc-media-downloader.firebasestorage.app"
+    "project_number": "492303138666",
+    "project_id": "nexus-media-downloader",
+    "storage_bucket": "nexus-media-downloader.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:375372672536:android:614827745ad9569b5c9d6d",
+        "mobilesdk_app_id": "1:492303138666:android:44657d17055bc0dc0caf13",
         "android_client_info": {
-          "package_name": "com.qubators.kcmediadownloader"
+          "package_name": "com.qubators.nexusmediadownloader"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCCZQKbOnIZul4QYEj95q17fmwQTINu4wg"
+          "current_key": "AIzaSyAbpiRmAPtsZdgxaprCzN9HcVv9bwzsqCY"
         }
       ],
       "services": {

@@ -8,7 +8,7 @@
 PRODUCT_NAME = kc_media_downloader
 
 // The application's bundle identifier
-PRODUCT_BUNDLE_IDENTIFIER = com.qubators.kcMediaDownloader
+PRODUCT_BUNDLE_IDENTIFIER = com.qubators.nexusMediaDownloader
 
 // The copyright displayed in application information
 PRODUCT_COPYRIGHT = Copyright © 2026 com.qubators. All rights reserved.

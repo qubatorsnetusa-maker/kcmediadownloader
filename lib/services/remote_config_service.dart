@@ -19,25 +19,25 @@ class RemoteConfigService {
     await _remoteConfig.setDefaults({
       'ad_cards': jsonEncode([
         {
-          'title': 'Download Faster with KC Downloader',
-          'subtitle': 'The best tool for KingsChat media.',
+          'title': 'Download Faster with Nexus',
+          'subtitle': 'The high-performance media tool.',
           'color': '0xFF2196F3',
           'buttonText': 'Learn More',
-          'buttonUrl': 'https://kingsch.at'
+          'buttonUrl': 'https://qubators.org'
         },
         {
-          'title': 'CeFlix Content Offline',
-          'subtitle': 'Save your favorite videos easily.',
+          'title': 'KingsChat & CeFlix',
+          'subtitle': 'Save your favorite content easily.',
           'color': '0xFF4CAF50',
           'buttonText': 'Watch Now',
           'buttonUrl': 'https://ceflix.org'
         },
         {
-          'title': 'Simple & Secure',
-          'subtitle': 'Your privacy is our priority.',
+          'title': 'Qubators TechLabs',
+          'subtitle': 'Innovating for the Gospel.',
           'color': '0xFFFF9800',
-          'buttonText': 'Our Privacy',
-          'buttonUrl': 'https://google.com'
+          'buttonText': 'Visit Us',
+          'buttonUrl': 'https://qubators.org'
         },
       ]),
     });
@@ -56,11 +56,11 @@ class RemoteConfigService {
     if (jsonStr.isEmpty) {
       return [
         {
-          'title': 'Download Faster with KC Downloader',
-          'subtitle': 'The best tool for KingsChat media.',
+          'title': 'Download Faster with Nexus',
+          'subtitle': 'The high-performance media tool.',
           'color': '0xFF2196F3',
           'buttonText': 'Learn More',
-          'buttonUrl': 'https://kingsch.at'
+          'buttonUrl': 'https://qubators.org'
         },
       ];
     }
