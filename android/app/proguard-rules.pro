@@ -27,3 +27,10 @@
 # JNI
 -keep class com.github.dart_lang.jni.** { *; }
 -keep class com.github.dart_lang.jni_flutter.** { *; }
+
+# Play Store / Deferred Components (Flutter internal)
+-dontwarn com.google.android.play.core.**
+-keep class com.google.android.play.core.splitcompat.SplitCompatApplication { *; }
+-keep class com.google.android.play.core.splitinstall.** { *; }
+-keep class com.google.android.play.core.tasks.** { *; }
+
