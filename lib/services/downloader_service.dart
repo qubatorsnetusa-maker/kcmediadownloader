@@ -11,10 +11,9 @@ import 'notification_service.dart';
 
 class DownloaderService {
   static final ReceivePort _port = ReceivePort();
-  static final List<Function(String, DownloadTaskStatus, int)> _listeners = [];
+  static final List<Function(String taskId, String url, DownloadTaskStatus status, int progress)> _listeners = [];
 
   static void initialize() {
-    // Only register once
     if (IsolateNameServer.lookupPortByName('downloader_send_port') != null) {
       IsolateNameServer.removePortNameMapping('downloader_send_port');
     }
@@ -22,30 +21,42 @@ class DownloaderService {
     IsolateNameServer.registerPortWithName(
         _port.sendPort, 'downloader_send_port');
 
-    _port.listen((dynamic data) {
+    _port.listen((dynamic data) async {
       String id = data[0];
       DownloadTaskStatus status = DownloadTaskStatus.fromInt(data[1]);
       int progress = data[2];
 
       debugPrint('Downloader update: ID=$id, Status=$status, Progress=$progress');
 
-      if (status == DownloadTaskStatus.complete) {
-        _handleDownloadComplete(id);
+      // Get the URL for this task from the DB to help the UI identify it
+      String url = '';
+      try {
+        final tasks = await FlutterDownloader.loadTasksWithRawQuery(
+            query: "SELECT * FROM task WHERE task_id = '$id'");
+        if (tasks != null && tasks.isNotEmpty) {
+          url = tasks.first.url;
+        }
+      } catch (e) {
+        debugPrint('Error querying task URL: $e');
       }
 
-      for (var listener in _listeners) {
-        listener(id, status, progress);
+      if (status == DownloadTaskStatus.complete) {
+        await _handleDownloadComplete(id);
+      }
+
+      for (var listener in List.from(_listeners)) {
+        listener(id, url, status, progress);
       }
     });
 
     FlutterDownloader.registerCallback(downloadCallback);
   }
 
-  static void addListener(Function(String, DownloadTaskStatus, int) listener) {
+  static void addListener(Function(String, String, DownloadTaskStatus, int) listener) {
     _listeners.add(listener);
   }
 
-  static void removeListener(Function(String, DownloadTaskStatus, int) listener) {
+  static void removeListener(Function(String, String, DownloadTaskStatus, int) listener) {
     _listeners.remove(listener);
   }
 
@@ -78,28 +89,35 @@ class DownloaderService {
         return;
       }
 
-      // Check if it's an image or video based on extension
+      final fileSize = await file.length();
+      debugPrint('Downloaded file size: $fileSize bytes');
+
+      if (fileSize == 0) {
+        debugPrint('Error: Downloaded file is empty (0 bytes). Link might be broken or expired.');
+        return;
+      }
+
       final lowerFileName = fileName.toLowerCase();
       final isVideo = lowerFileName.endsWith('.mp4') ||
                       lowerFileName.endsWith('.mov') ||
-                      lowerFileName.endsWith('.avi');
+                      lowerFileName.endsWith('.avi') ||
+                      task.url.toLowerCase().contains('.mp4');
 
       try {
         if (isVideo) {
           debugPrint('Saving as video to gallery...');
-          await Gal.putVideo(filePath);
+          await Gal.putVideo(filePath, album: 'Nexus Downloader');
         } else {
           debugPrint('Saving as image to gallery...');
-          await Gal.putImage(filePath);
+          await Gal.putImage(filePath, album: 'Nexus Downloader');
         }
         debugPrint('Successfully saved to gallery!');
 
-        // Show notification
         await NotificationService.showDownloadCompleteNotification(
           fileName: fileName,
         );
 
-        // Clean up temp file AFTER successful gallery save
+        // Clean up temp file
         if (await file.exists()) {
           await file.delete();
           debugPrint('Deleted temporary file: $filePath');
@@ -135,7 +153,6 @@ class DownloaderService {
         return null;
       }
 
-      // Ensure we have access before starting
       final hasAccess = await Gal.hasAccess(toAlbum: true);
       if (!hasAccess) {
         final granted = await Gal.requestAccess(toAlbum: true);
@@ -145,15 +162,31 @@ class DownloaderService {
         }
       }
 
-      final tempDir = await getTemporaryDirectory();
+      final tempDir = await getApplicationDocumentsDirectory(); // More stable than temp on some devices
+      final downloadPath = p.join(tempDir.path, 'downloads');
+      final dir = Directory(downloadPath);
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+
+      // Clear previous tasks with same URL to avoid conflicts
+      try {
+        final existingTasks = await FlutterDownloader.loadTasksWithRawQuery(
+            query: "SELECT * FROM task WHERE url = '$url'");
+        if (existingTasks != null) {
+          for (var task in existingTasks) {
+            await FlutterDownloader.remove(taskId: task.taskId, shouldDeleteContent: true);
+          }
+        }
+      } catch (_) {}
 
       final taskId = await FlutterDownloader.enqueue(
         url: url,
-        savedDir: tempDir.path,
+        savedDir: downloadPath,
         fileName: fileName,
         showNotification: true,
         openFileFromNotification: false,
-        saveInPublicStorage: false, // Save to app-private cache first
+        saveInPublicStorage: false,
       );
 
       if (taskId != null) {

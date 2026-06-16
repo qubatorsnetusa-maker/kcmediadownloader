@@ -21,7 +21,6 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _urlController = TextEditingController();
   bool _isLoading = false;
   final Map<String, double> _downloadProgress = {};
-  final Map<String, String> _urlToTaskId = {};
   final Set<String> _downloadingUrls = {};
   List<MediaInfo> _results = [];
 
@@ -37,25 +36,20 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
-  void _onDownloadUpdate(String id, DownloadTaskStatus status, int progress) {
+  void _onDownloadUpdate(String id, String url, DownloadTaskStatus status, int progress) {
     if (!mounted) return;
 
     setState(() {
-      String? targetUrl;
-      _urlToTaskId.forEach((url, taskId) {
-        if (taskId == id) targetUrl = url;
-      });
-
-      if (targetUrl != null) {
-        _downloadProgress[targetUrl!] = progress / 100;
+      if (url.isNotEmpty) {
+        _downloadProgress[url] = progress / 100;
 
         if (status == DownloadTaskStatus.complete) {
-          _downloadingUrls.remove(targetUrl);
+          _downloadingUrls.remove(url);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Saved to Gallery!')),
           );
         } else if (status == DownloadTaskStatus.failed) {
-          _downloadingUrls.remove(targetUrl);
+          _downloadingUrls.remove(url);
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Download failed.')),
           );
@@ -130,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     final fileName = 'Nexus_${DateTime.now().millisecondsSinceEpoch}.$extension';
 
-    final taskId = await DownloaderService.downloadFile(
+    await DownloaderService.downloadFile(
       url: media.url!,
       fileName: fileName,
       isVideo: media.type == MediaType.video,
@@ -150,12 +144,6 @@ class _HomeScreenState extends State<HomeScreen> {
         );
       },
     );
-
-    if (taskId != null) {
-      setState(() {
-        _urlToTaskId[media.url!] = taskId;
-      });
-    }
   }
 
   @override
