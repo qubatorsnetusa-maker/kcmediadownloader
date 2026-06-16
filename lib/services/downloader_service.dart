@@ -9,10 +9,12 @@ import 'package:path/path.dart' as p;
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'notification_service.dart';
 
+@pragma('vm:entry-point')
 class DownloaderService {
   static final ReceivePort _port = ReceivePort();
   static final List<Function(String taskId, String url, DownloadTaskStatus status, int progress)> _listeners = [];
 
+  @pragma('vm:entry-point')
   static void initialize() {
     debugPrint('Initializing DownloaderService...');
 
@@ -80,6 +82,7 @@ class DownloaderService {
     }
   }
 
+  @pragma('vm:entry-point')
   static Future<void> _handleDownloadComplete(String taskId) async {
     try {
       final tasks = await FlutterDownloader.loadTasksWithRawQuery(
