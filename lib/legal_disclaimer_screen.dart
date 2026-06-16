@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
 import 'home_screen.dart';
 import 'walkthrough_screen.dart';
+import 'styles/glass_styles.dart';
 
 class LegalDisclaimerScreen extends StatelessWidget {
   final bool showWalkthrough;
@@ -23,125 +24,115 @@ class LegalDisclaimerScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          // Orange and Purple Gradient Background
-          Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Color(0xFFFF9800), // Orange
-                  Color(0xFF9C27B0), // Purple
-                ],
-              ),
-            ),
-          ),
-          // Content
-          SafeArea(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-                const Text(
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: GlassStyles.radialBackgroundGradient,
+        ),
+        child: SafeArea(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.only(top: 24.0, bottom: 12.0),
+                child: Text(
                   'Legal Disclaimer',
-                  style: TextStyle(
-                    fontSize: 28,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    shadows: [Shadow(color: Colors.black26, blurRadius: 10, offset: Offset(0, 2))],
+                    color: Colors.slate[900],
+                    letterSpacing: -0.5,
                   ),
                 ),
-                const SizedBox(height: 20),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(30),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40), // Increased blur
-                        child: Container(
-                          padding: const EdgeInsets.all(24),
-                          decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.1), // Reduced opacity for more effect
-                            borderRadius: BorderRadius.circular(30),
-                            border: Border.all(color: Colors.white.withOpacity(0.2)),
-                          ),
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'By using this application, you acknowledge and agree that:',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
-                                ),
-                                const SizedBox(height: 24),
-                                _buildGlassBullet(
-                                  'User Responsibility:',
-                                  'You are solely responsible for any media files you download through this application. This app serves as a tool only and does not host, store, or distribute any content.',
-                                ),
-                                _buildGlassBullet(
-                                  'Permission & Rights:',
-                                  'You confirm that you have obtained all necessary permissions, licenses, or authorizations from the copyright holders before downloading any media files. It is your responsibility to ensure compliance with applicable copyright laws, terms of service, and intellectual property rights.',
-                                ),
-                                _buildGlassBullet(
-                                  'No Liability:',
-                                  'This application and its developers shall not be held liable for any legal consequences, damages, or losses arising from your use of downloaded content, including but not limited to copyright infringement claims, misuse, or unauthorized distribution.',
-                                ),
-                                _buildGlassBullet(
-                                  'Lawful Use:',
-                                  'You agree to use downloaded media files for lawful purposes only, in accordance with your local jurisdiction\'s laws and regulations.',
-                                ),
-                                _buildGlassBullet(
-                                  'Indemnification:',
-                                  'You agree to indemnify and hold harmless this application, its developers, and affiliates from any claims, damages, or legal actions resulting from your use of this service.',
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 20),
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(30),
+                    borderRadius: BorderRadius.circular(40),
                     child: BackdropFilter(
-                      filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
-                      child: ElevatedButton(
-                        onPressed: () => _acceptDisclaimer(context),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.85),
-                          foregroundColor: const Color(0xFF9C27B0), // Purple text
-                          minimumSize: const Size(double.infinity, 60),
-                          shape: const StadiumBorder(), // Full rounded edges
-                          elevation: 0,
+                      filter: ImageFilter.blur(sigmaX: GlassStyles.glassBlur, sigmaY: GlassStyles.glassBlur),
+                      child: Container(
+                        decoration: GlassStyles.glassPanelDecoration.copyWith(
+                          borderRadius: BorderRadius.circular(40),
                         ),
-                        child: const Text('I Accept & Agree', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                        padding: const EdgeInsets.all(32),
+                        child: SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Legal Disclaimer',
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.slate[900],
+                                  height: 1.1,
+                                ),
+                              ),
+                              const SizedBox(height: 32),
+                              _buildSection('User Responsibility:', 'You are solely responsible for any media files you download through this application. This app serves as a tool only and does not host, store, or distribute any content.'),
+                              _buildSection('Permission & Rights:', 'You confirm that you have obtained all necessary permissions, licenses, or authorizations from the copyright holders before downloading any media files.'),
+                              _buildSection('No Liability:', 'This application and its developers shall not be held liable for any legal consequences, damages, or losses arising from your use of downloaded content.'),
+                              _buildSection('Lawful Use:', 'You agree to use downloaded media files for lawful purposes only, in accordance with your local jurisdiction\'s laws and regulations.'),
+                            ],
+                          ),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+                child: GestureDetector(
+                  onTap: () => _acceptDisclaimer(context),
+                  child: Container(
+                    height: 64,
+                    decoration: GlassStyles.glassPanelDecoration.copyWith(
+                      borderRadius: BorderRadius.circular(32),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'I Accept & Agree',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildGlassBullet(String title, String body) {
+  Widget _buildSection(String title, String body) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 20.0),
+      padding: const EdgeInsets.only(bottom: 32.0),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
-          const SizedBox(height: 4),
-          Text(body, style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.9))),
+          Text(
+            title,
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+              color: Colors.slate[900],
+              letterSpacing: 0.2,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            body,
+            style: TextStyle(
+              fontSize: 15,
+              color: Colors.slate[700],
+              height: 1.6,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );

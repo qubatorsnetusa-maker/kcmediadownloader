@@ -36,14 +36,28 @@ class KCMediaDownloaderApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'KC Media Downloader',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: const Color(0xFF007AFF),
+          surface: const Color(0xFFF0F4F8),
+        ),
         useMaterial3: true,
-        inputDecorationTheme: InputDecorationTheme(
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          filled: true,
-          fillColor: Colors.grey[100],
+        fontFamily: 'Inter',
+        textTheme: const TextTheme(
+          displayLarge: TextStyle(fontFamily: 'Inter'),
+          displayMedium: TextStyle(fontFamily: 'Inter'),
+          displaySmall: TextStyle(fontFamily: 'Inter'),
+          headlineLarge: TextStyle(fontFamily: 'Inter'),
+          headlineMedium: TextStyle(fontFamily: 'Inter'),
+          headlineSmall: TextStyle(fontFamily: 'Inter'),
+          titleLarge: TextStyle(fontFamily: 'Inter'),
+          titleMedium: TextStyle(fontFamily: 'Inter'),
+          titleSmall: TextStyle(fontFamily: 'Inter'),
+          bodyLarge: TextStyle(fontFamily: 'Inter'),
+          bodyMedium: TextStyle(fontFamily: 'Inter'),
+          bodySmall: TextStyle(fontFamily: 'Inter'),
+          labelLarge: TextStyle(fontFamily: 'Inter'),
+          labelMedium: TextStyle(fontFamily: 'Inter'),
+          labelSmall: TextStyle(fontFamily: 'Inter'),
         ),
       ),
       home: !hasAcceptedLegal
