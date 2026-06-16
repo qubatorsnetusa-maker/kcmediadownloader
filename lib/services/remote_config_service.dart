@@ -11,7 +11,7 @@ class RemoteConfigService {
   Future<void> initialize() async {
     await _remoteConfig.setConfigSettings(RemoteConfigSettings(
       fetchTimeout: const Duration(minutes: 1),
-      minimumFetchInterval: const Duration(hours: 1),
+      minimumFetchInterval: Duration.zero,
     ));
 
     // Set default values
@@ -50,11 +50,35 @@ class RemoteConfigService {
 
   List<Map<String, String>> getAdCards() {
     final String jsonStr = _remoteConfig.getString('ad_cards');
+
+    // If empty, try to return default values manually as a fallback
+    if (jsonStr.isEmpty) {
+      return [
+        {
+          'title': 'Download Faster with KC Downloader',
+          'subtitle': 'The best tool for KingsChat media.',
+          'color': '0xFF2196F3',
+          'buttonText': 'Learn More',
+          'buttonUrl': 'https://kingsch.at'
+        },
+      ];
+    }
+
     try {
       final List<dynamic> decoded = jsonDecode(jsonStr);
       return decoded.map((item) => Map<String, String>.from(item)).toList();
     } catch (e) {
-      return [];
+      print('RemoteConfig Error parsing JSON: $e');
+      // Return a single card as fallback on error
+      return [
+        {
+          'title': 'Configuration Error',
+          'subtitle': 'Please check your Firebase JSON format.',
+          'color': '0xFFF44336',
+          'buttonText': 'Help',
+          'buttonUrl': 'https://google.com'
+        }
+      ];
     }
   }
 }

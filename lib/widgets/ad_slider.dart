@@ -14,6 +14,18 @@ class AdSlider extends StatelessWidget {
     }
   }
 
+  Color _parseColor(String? colorStr) {
+    if (colorStr == null) return Colors.blue;
+    try {
+      if (colorStr.startsWith('#')) {
+        return Color(int.parse(colorStr.replaceFirst('#', '0xFF')));
+      }
+      return Color(int.parse(colorStr));
+    } catch (e) {
+      return Colors.blue;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final ads = RemoteConfigService().getAdCards();
@@ -30,11 +42,12 @@ class AdSlider extends StatelessWidget {
       items: ads.map((ad) {
         return Builder(
           builder: (BuildContext context) {
+            final cardColor = _parseColor(ad['color']);
             return Container(
               width: MediaQuery.of(context).size.width,
               margin: const EdgeInsets.symmetric(horizontal: 5.0),
               decoration: BoxDecoration(
-                color: Color(int.parse(ad['color']!)),
+                color: cardColor,
                 borderRadius: BorderRadius.circular(12.0),
               ),
               child: Padding(
@@ -47,7 +60,7 @@ class AdSlider extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            ad['title']!,
+                            ad['title'] ?? 'No Title',
                             style: const TextStyle(
                               fontSize: 16.0,
                               fontWeight: FontWeight.bold,
@@ -56,7 +69,7 @@ class AdSlider extends StatelessWidget {
                           ),
                           const SizedBox(height: 4.0),
                           Text(
-                            ad['subtitle']!,
+                            ad['subtitle'] ?? '',
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: const TextStyle(
@@ -74,7 +87,7 @@ class AdSlider extends StatelessWidget {
                           onPressed: () => _launchUrl(ad['buttonUrl']),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.white,
-                            foregroundColor: Color(int.parse(ad['color']!)),
+                            foregroundColor: cardColor,
                             padding: const EdgeInsets.symmetric(horizontal: 12),
                             textStyle: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
                           ),
