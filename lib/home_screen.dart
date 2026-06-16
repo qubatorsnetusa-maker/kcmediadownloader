@@ -39,6 +39,8 @@ class _HomeScreenState extends State<HomeScreen> {
   void _onDownloadUpdate(String id, String url, DownloadTaskStatus status, int progress) {
     if (!mounted) return;
 
+    debugPrint('UI received update: URL=$url, Status=$status, Progress=$progress');
+
     setState(() {
       if (url.isNotEmpty) {
         _downloadProgress[url] = progress / 100;
@@ -51,7 +53,7 @@ class _HomeScreenState extends State<HomeScreen> {
         } else if (status == DownloadTaskStatus.failed) {
           _downloadingUrls.remove(url);
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Download failed.')),
+            const SnackBar(content: Text('Download failed. Please check the link.')),
           );
         }
       }
@@ -106,7 +108,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     setState(() {
       _downloadingUrls.add(media.url!);
-      _downloadProgress[media.url!] = 0;
+      _downloadProgress[media.url!] = 0.01; // Start with visible progress
     });
 
     String extension = media.type == MediaType.video ? 'mp4' : 'jpg';
