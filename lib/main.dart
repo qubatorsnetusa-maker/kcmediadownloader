@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'services/remote_config_service.dart';
 import 'home_screen.dart';
+import 'walkthrough_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await RemoteConfigService().initialize();
-  runApp(const KCMediaDownloaderApp());
+
+  final prefs = await SharedPreferences.getInstance();
+  final showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
+
+  runApp(KCMediaDownloaderApp(showWalkthrough: showWalkthrough));
 }
 
 class KCMediaDownloaderApp extends StatelessWidget {
-  const KCMediaDownloaderApp({super.key});
+  final bool showWalkthrough;
+  const KCMediaDownloaderApp({super.key, required this.showWalkthrough});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +36,7 @@ class KCMediaDownloaderApp extends StatelessWidget {
           fillColor: Colors.grey[100],
         ),
       ),
-      home: const HomeScreen(),
+      home: showWalkthrough ? const WalkthroughScreen() : const HomeScreen(),
     );
   }
 }
