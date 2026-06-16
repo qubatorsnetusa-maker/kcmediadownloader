@@ -20,17 +20,23 @@ class RemoteConfigService {
         {
           'title': 'Download Faster with KC Downloader',
           'subtitle': 'The best tool for KingsChat media.',
-          'color': '0xFF2196F3'
+          'color': '0xFF2196F3',
+          'buttonText': 'Learn More',
+          'buttonUrl': 'https://kingsch.at'
         },
         {
           'title': 'CeFlix Content Offline',
           'subtitle': 'Save your favorite videos easily.',
-          'color': '0xFF4CAF50'
+          'color': '0xFF4CAF50',
+          'buttonText': 'Watch Now',
+          'buttonUrl': 'https://ceflix.org'
         },
         {
           'title': 'Simple & Secure',
           'subtitle': 'Your privacy is our priority.',
-          'color': '0xFFFF9800'
+          'color': '0xFFFF9800',
+          'buttonText': 'Our Privacy',
+          'buttonUrl': 'https://google.com'
         },
       ]),
     });
