@@ -24,23 +24,4 @@ plugins {
     id("com.google.gms.google-services") version "4.4.2" apply false
 }
 
-rootProject.name = "nexus_media_downloader"
-
 include(":app")
-project(":app").projectDir = file("android/app")
-
-// Manually include Flutter plugins because the loader might be looking in the wrong place
-val pluginsFile = file(".flutter-plugins-dependencies")
-if (pluginsFile.exists()) {
-    val json = pluginsFile.readText()
-    val androidPluginsRegex = "\"name\":\"([^\"]+)\",\"path\":\"([^\"]+)\"[^}]*\"native_build\":true".toRegex()
-    androidPluginsRegex.findAll(json).forEach { match ->
-        val name = match.groups[1]?.value
-        val path = match.groups[2]?.value?.replace("\\\\", "/")
-        if (name != null && path != null) {
-            val projectPath = ":$name"
-            include(projectPath)
-            project(projectPath).projectDir = file("${path}android")
-        }
-    }
-}
