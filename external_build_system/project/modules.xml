@@ -1,0 +1,11 @@
+<project>
+  <component name="ExternalProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/kcmediadownloader.iml" filepath="$PROJECT_DIR$/.idea/modules/kcmediadownloader.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/kcmediadownloader.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/kcmediadownloader.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/kcmediadownloader.app.androidTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/kcmediadownloader.app.androidTest.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/kcmediadownloader.app.main.iml" filepath="$PROJECT_DIR$/.idea/modules/app/kcmediadownloader.app.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/kcmediadownloader.app.unitTest.iml" filepath="$PROJECT_DIR$/.idea/modules/app/kcmediadownloader.app.unitTest.iml" />
+    </modules>
+  </component>
+</project>
