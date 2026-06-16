@@ -6,6 +6,7 @@ import 'services/media_extractor.dart';
 import 'services/downloader_service.dart';
 import 'terms_and_conditions_screen.dart';
 import 'legal_disclaimer_view_screen.dart';
+import 'about_us_screen.dart';
 import 'styles/glass_styles.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -18,9 +19,9 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _urlController = TextEditingController();
   bool _isLoading = false;
-  double _downloadProgress = 0;
-  bool _isDownloading = false;
-  MediaInfo? _result;
+  final Map<String, double> _downloadProgress = {};
+  final Set<String> _downloadingUrls = {};
+  List<MediaInfo> _results = [];
 
   void _processLink() async {
     final url = _urlController.text.trim();
@@ -31,81 +32,88 @@ class _HomeScreenState extends State<HomeScreen> {
       return;
     }
 
+    if (!await DownloaderService.checkInternet()) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('No internet connection. Please check your network settings.')),
+      );
+      return;
+    }
+
     setState(() {
       _isLoading = true;
-      _result = null;
+      _results = [];
     });
 
     try {
-      final info = await MediaExtractorService.extract(url);
+      final infos = await MediaExtractorService.extract(url);
       if (!mounted) return;
       setState(() {
         _isLoading = false;
-        _result = info;
-        if (info == null) {
+        _results = infos;
+        if (infos.isEmpty) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Could not extract media from this link.')),
+            const SnackBar(content: Text('Could not find any media at this link. Please make sure it is a public post.')),
           );
         }
       });
     } catch (e) {
+      if (!mounted) return;
       setState(() => _isLoading = false);
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text(e.toString())),
       );
     }
   }
 
-  void _downloadMedia() async {
-    if (_result == null || _result!.url == null) return;
+  void _downloadMedia(MediaInfo media) async {
+    if (media.url == null) return;
 
     setState(() {
-      _isDownloading = true;
-      _downloadProgress = 0;
+      _downloadingUrls.add(media.url!);
+      _downloadProgress[media.url!] = 0;
     });
 
-    String extension = _result!.type == MediaType.video ? 'mp4' : 'jpg';
+    String extension = media.type == MediaType.video ? 'mp4' : 'jpg';
     try {
-      final uri = Uri.parse(_result!.url!);
+      final uri = Uri.parse(media.url!);
       final path = uri.path.toLowerCase();
       if (path.endsWith('.webp')) {
         extension = 'webp';
       } else if (path.endsWith('.png')) {
         extension = 'png';
-      } else if (path.endsWith('.mp4') || (path.endsWith('.temp') && _result!.type == MediaType.video)) {
+      } else if (path.endsWith('.mp4')) {
         extension = 'mp4';
-      } else if (path.contains('.')) {
-        final parts = path.split('.');
-        final lastPart = parts.last;
-        if (lastPart.length <= 4) {
-          extension = lastPart;
-        }
       }
     } catch (_) {}
 
     final fileName = 'KC_${DateTime.now().millisecondsSinceEpoch}.$extension';
 
     await DownloaderService.downloadFile(
-      url: _result!.url!,
+      url: media.url!,
       fileName: fileName,
-      isVideo: _result!.type == MediaType.video,
+      isVideo: media.type == MediaType.video,
       onProgress: (count, total) {
-        if (total > 0) {
+        if (total > 0 && mounted) {
           setState(() {
-            _downloadProgress = count / total;
+            _downloadProgress[media.url!] = count / total;
           });
         }
       },
       onSuccess: (path) {
         if (!mounted) return;
-        setState(() => _isDownloading = false);
+        setState(() {
+          _downloadingUrls.remove(media.url);
+        });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Downloaded to: $path')),
+          SnackBar(content: Text('Saved to Gallery!')),
         );
       },
       onError: (error) {
         if (!mounted) return;
-        setState(() => _isDownloading = false);
+        setState(() {
+          _downloadingUrls.remove(media.url);
+        });
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error)),
         );
@@ -124,12 +132,12 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 24.0),
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
                 child: Text(
-                  'KC Media Downloader',
+                  'Nexus Media Downloader',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.slate[900],
+                    color: Colors.blueGrey[900],
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -140,7 +148,6 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      // URL Input with Glass Panel
                       ClipRRect(
                         borderRadius: BorderRadius.circular(20),
                         child: BackdropFilter(
@@ -153,18 +160,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             child: TextField(
                               controller: _urlController,
                               decoration: const InputDecoration(
-                                hintText: 'https://www.kingsch.at/p/VjQ3Zjd',
+                                hintText: 'Paste link here...',
                                 border: InputBorder.none,
                                 filled: false,
-                                icon: Icon(Icons.link, color: Colors.slate),
+                                icon: Icon(Icons.link, color: Colors.blueGrey),
                               ),
-                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.medium),
+                              style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                             ),
                           ),
                         ),
                       ),
                       const SizedBox(height: 16),
-                      // Process Button
                       GestureDetector(
                         onTap: _isLoading ? null : _processLink,
                         child: ClipRRect(
@@ -191,25 +197,29 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      const SizedBox(height: 32),
-                      if (_result != null) _buildResultCard(),
+                      const SizedBox(height: 24),
+                      if (_results.isNotEmpty)
+                        Column(
+                          children: _results.map((res) => _buildResultCard(res)).toList(),
+                        ),
                     ],
                   ),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.only(bottom: 16.0),
-                child: AdSlider(),
-              ),
+              const AdSlider(),
               Padding(
-                padding: const EdgeInsets.only(bottom: 16.0),
+                padding: const EdgeInsets.symmetric(vertical: 12.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
+                    _buildFooterLink('About Us', () {
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const AboutUsScreen()));
+                    }),
+                    const Text(' | ', style: TextStyle(color: Colors.blueGrey, fontSize: 12)),
                     _buildFooterLink('Legal Disclaimer', () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const LegalDisclaimerViewScreen()));
                     }),
-                    const Text(' | ', style: TextStyle(color: Colors.slate, fontSize: 12)),
+                    const Text(' | ', style: TextStyle(color: Colors.blueGrey, fontSize: 12)),
                     _buildFooterLink('Terms and Conditions', () {
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsAndConditionsScreen()));
                     }),
@@ -229,7 +239,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Text(
         text,
         style: const TextStyle(
-          color: Colors.slate,
+          color: Colors.blueGrey,
           fontSize: 12,
           fontWeight: FontWeight.w500,
           decoration: TextDecoration.underline,
@@ -238,97 +248,105 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildResultCard() {
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(30),
-      child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: GlassStyles.glassBlur, sigmaY: GlassStyles.glassBlur),
-        child: Container(
-          decoration: GlassStyles.glassPanelDecoration.copyWith(
-            borderRadius: BorderRadius.circular(30),
-          ),
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text('🎬', style: TextStyle(fontSize: 24)),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      _result!.title,
-                      style: const TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        height: 1.2,
+  Widget _buildResultCard(MediaInfo media) {
+    bool isDownloading = _downloadingUrls.contains(media.url);
+    double progress = _downloadProgress[media.url] ?? 0;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 16.0),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: BackdropFilter(
+          filter: ImageFilter.blur(sigmaX: GlassStyles.glassBlur, sigmaY: GlassStyles.glassBlur),
+          child: Container(
+            decoration: GlassStyles.glassPanelDecoration.copyWith(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(12),
+                      child: Container(
+                        width: 80,
+                        height: 80,
+                        color: Colors.black12,
+                        child: media.thumbnailUrl != null
+                            ? Image.network(
+                                media.thumbnailUrl!,
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) => const Icon(Icons.broken_image, color: Colors.grey),
+                              )
+                            : Icon(
+                                media.type == MediaType.video ? Icons.videocam : Icons.image,
+                                color: Colors.blueGrey,
+                              ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  _buildResultInfo('Platform', _result!.platform),
-                  _buildResultInfo('Type', _result!.type.name.toUpperCase(), alignEnd: true),
-                ],
-              ),
-              const SizedBox(height: 32),
-              if (_isDownloading)
-                Column(
-                  children: [
-                    LinearProgressIndicator(value: _downloadProgress),
-                    const SizedBox(height: 8),
-                    Text('${(_downloadProgress * 100).toStringAsFixed(0)}%'),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            media.title,
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                          ),
+                          const SizedBox(height: 4),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                                decoration: BoxDecoration(
+                                  color: Colors.blue.withValues(alpha: 0.1),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Text(
+                                  media.type.name.toUpperCase(),
+                                  style: const TextStyle(color: Colors.blue, fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Text(media.platform, style: TextStyle(color: Colors.blueGrey[600], fontSize: 12)),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
-                )
-              else
-                ElevatedButton.icon(
-                  onPressed: _result?.url != null ? _downloadMedia : null,
-                  icon: const Icon(Icons.download),
-                  label: Text(_result?.url != null ? 'Download Media' : 'Direct Link Not Found'),
-                  style: ElevatedButton.styleFrom(
-                    minimumSize: const Size(double.infinity, 56),
-                    backgroundColor: Colors.transparent,
-                    foregroundColor: Colors.blue,
-                    elevation: 0,
-                    side: BorderSide(color: Colors.blue.withOpacity(0.2)),
-                    shape: const StadiumBorder(),
-                  ),
                 ),
-            ],
+                const SizedBox(height: 16),
+                if (isDownloading)
+                  Column(
+                    children: [
+                      LinearProgressIndicator(value: progress, borderRadius: BorderRadius.circular(4)),
+                      const SizedBox(height: 4),
+                      Text('${(progress * 100).toStringAsFixed(0)}%', style: const TextStyle(fontSize: 10)),
+                    ],
+                  )
+                else
+                  ElevatedButton.icon(
+                    onPressed: () => _downloadMedia(media),
+                    icon: const Icon(Icons.download, size: 18),
+                    label: const Text('Save to Gallery'),
+                    style: ElevatedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 44),
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      elevation: 0,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildResultInfo(String label, String value, {bool alignEnd = false}) {
-    return Column(
-      crossAxisAlignment: alignEnd ? CrossAxisAlignment.end : CrossAxisAlignment.start,
-      children: [
-        Text(
-          label.toUpperCase(),
-          style: TextStyle(
-            color: Colors.slate[500],
-            fontSize: 10,
-            fontWeight: FontWeight.bold,
-            letterSpacing: 1.2,
-          ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: TextStyle(
-            color: Colors.slate[700],
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-      ],
     );
   }
 }

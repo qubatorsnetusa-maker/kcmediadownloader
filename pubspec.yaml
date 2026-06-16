@@ -47,6 +47,7 @@ dependencies:
   shared_preferences: ^2.5.5
   introduction_screen: ^4.0.0
   gal: ^2.3.2
+  connectivity_plus: ^7.1.1
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,18 @@ flutter:
   # included with your application, so that you can use the icons in
   # the material Icons class.
   uses-material-design: true
+
+  fonts:
+    - family: PlusJakartaSans
+      fonts:
+        - asset: assets/fonts/PlusJakartaSans-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/PlusJakartaSans-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/PlusJakartaSans-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/PlusJakartaSans-ExtraBold.ttf
+          weight: 800
 
   # To add assets to your application, add an assets section, like this:
   # assets:

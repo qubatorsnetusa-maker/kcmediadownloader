@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';
 
 class GlassStyles {
   static BoxDecoration get glassPanelDecoration => BoxDecoration(
-        color: Colors.white.withOpacity(0.7),
+        color: Colors.white.withValues(alpha: 0.7),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: Colors.white.withOpacity(0.5)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.5)),
         boxShadow: [
           BoxShadow(
-            color: const Color(0xFF1F2687).withOpacity(0.07),
+            color: const Color(0xFF1F2687).withValues(alpha: 0.07),
             blurRadius: 32,
             offset: const Offset(0, 8),
           ),
@@ -16,9 +15,9 @@ class GlassStyles {
       );
 
   static BoxDecoration get glassInputDecoration => BoxDecoration(
-        color: Colors.white.withOpacity(0.5),
+        color: Colors.white.withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withOpacity(0.8)),
+        border: Border.all(color: Colors.white.withValues(alpha: 0.8)),
       );
 
   static const double glassBlur = 20.0;

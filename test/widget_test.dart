@@ -5,7 +5,10 @@ import 'package:kc_media_downloader/main.dart';
 void main() {
   testWidgets('App basic UI test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const KCMediaDownloaderApp());
+    await tester.pumpWidget(const KCMediaDownloaderApp(
+      showWalkthrough: false,
+      hasAcceptedLegal: true,
+    ));
 
     // Verify that our title is present.
     expect(find.text('KC Media Downloader'), findsOneWidget);

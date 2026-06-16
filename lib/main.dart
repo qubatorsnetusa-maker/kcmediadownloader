@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'services/remote_config_service.dart';
 import 'home_screen.dart';
 import 'walkthrough_screen.dart';
@@ -10,6 +11,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   await RemoteConfigService().initialize();
+
+  // Request essential permissions on startup
+  await [
+    Permission.storage,
+    Permission.photos,
+    Permission.videos,
+  ].request();
 
   final prefs = await SharedPreferences.getInstance();
   final showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
@@ -32,32 +40,34 @@ class KCMediaDownloaderApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const String fontFamily = 'PlusJakartaSans';
+
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'KC Media Downloader',
+      title: 'Nexus Media Downloader',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(
           seedColor: const Color(0xFF007AFF),
           surface: const Color(0xFFF0F4F8),
         ),
         useMaterial3: true,
-        fontFamily: 'Inter',
+        fontFamily: fontFamily,
         textTheme: const TextTheme(
-          displayLarge: TextStyle(fontFamily: 'Inter'),
-          displayMedium: TextStyle(fontFamily: 'Inter'),
-          displaySmall: TextStyle(fontFamily: 'Inter'),
-          headlineLarge: TextStyle(fontFamily: 'Inter'),
-          headlineMedium: TextStyle(fontFamily: 'Inter'),
-          headlineSmall: TextStyle(fontFamily: 'Inter'),
-          titleLarge: TextStyle(fontFamily: 'Inter'),
-          titleMedium: TextStyle(fontFamily: 'Inter'),
-          titleSmall: TextStyle(fontFamily: 'Inter'),
-          bodyLarge: TextStyle(fontFamily: 'Inter'),
-          bodyMedium: TextStyle(fontFamily: 'Inter'),
-          bodySmall: TextStyle(fontFamily: 'Inter'),
-          labelLarge: TextStyle(fontFamily: 'Inter'),
-          labelMedium: TextStyle(fontFamily: 'Inter'),
-          labelSmall: TextStyle(fontFamily: 'Inter'),
+          displayLarge: TextStyle(fontFamily: fontFamily),
+          displayMedium: TextStyle(fontFamily: fontFamily),
+          displaySmall: TextStyle(fontFamily: fontFamily),
+          headlineLarge: TextStyle(fontFamily: fontFamily),
+          headlineMedium: TextStyle(fontFamily: fontFamily),
+          headlineSmall: TextStyle(fontFamily: fontFamily),
+          titleLarge: TextStyle(fontFamily: fontFamily),
+          titleMedium: TextStyle(fontFamily: fontFamily),
+          titleSmall: TextStyle(fontFamily: fontFamily),
+          bodyLarge: TextStyle(fontFamily: fontFamily),
+          bodyMedium: TextStyle(fontFamily: fontFamily),
+          bodySmall: TextStyle(fontFamily: fontFamily),
+          labelLarge: TextStyle(fontFamily: fontFamily),
+          labelMedium: TextStyle(fontFamily: fontFamily),
+          labelSmall: TextStyle(fontFamily: fontFamily),
         ),
       ),
       home: !hasAcceptedLegal

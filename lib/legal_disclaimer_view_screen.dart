@@ -10,11 +10,11 @@ class LegalDisclaimerViewScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Legal Disclaimer', style: TextStyle(color: Colors.slate[900], fontWeight: FontWeight.bold)),
+        title: Text('Legal Disclaimer', style: TextStyle(color: Colors.blueGrey[900], fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.slate[900]),
+        iconTheme: IconThemeData(color: Colors.blueGrey[900]),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -38,7 +38,7 @@ class LegalDisclaimerViewScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Legal Disclaimer',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.slate[900]),
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueGrey[900]),
                         ),
                         const SizedBox(height: 24),
                         _buildPoint('User Responsibility:', 'You are solely responsible for any media files you download through this application. This app serves as a tool only and does not host, store, or distribute any content.'),
@@ -46,6 +46,17 @@ class LegalDisclaimerViewScreen extends StatelessWidget {
                         _buildPoint('No Liability:', 'This application and its developers shall not be held liable for any legal consequences, damages, or losses arising from your use of downloaded content.'),
                         _buildPoint('Lawful Use:', 'You agree to use downloaded media files for lawful purposes only, in accordance with your local jurisdiction\'s laws and regulations.'),
                         _buildPoint('Indemnification:', 'You agree to indemnify and hold harmless this application, its developers, and affiliates from any claims, damages, or legal actions resulting from your use of this service.'),
+                        const SizedBox(height: 16),
+                        const Center(
+                          child: Text(
+                            'Qubators Network 2026',
+                            style: TextStyle(
+                              color: Colors.blueGrey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -64,9 +75,9 @@ class LegalDisclaimerViewScreen extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.slate[900])),
+          Text(title, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.blueGrey[900])),
           const SizedBox(height: 4),
-          Text(body, style: TextStyle(fontSize: 14, color: Colors.slate[700], height: 1.5, fontWeight: FontWeight.w500)),
+          Text(body, style: TextStyle(fontSize: 14, color: Colors.blueGrey[700], height: 1.5, fontWeight: FontWeight.w500)),
         ],
       ),
     );

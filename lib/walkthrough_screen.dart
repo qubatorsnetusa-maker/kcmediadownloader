@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:ui';
 import 'home_screen.dart';
 import 'styles/glass_styles.dart';
 
@@ -77,10 +76,10 @@ class WalkthroughScreen extends StatelessWidget {
     return PageViewModel(
       title: title,
       body: body,
-      image: Center(child: Icon(icon, size: 175, color: color.withOpacity(0.8))),
+      image: Center(child: Icon(icon, size: 175, color: color.withValues(alpha: 0.8))),
       decoration: PageDecoration(
-        titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: Colors.slate[900], letterSpacing: -0.5),
-        bodyTextStyle: TextStyle(fontSize: 18.0, color: Colors.slate[700], fontWeight: FontWeight.w500),
+        titleTextStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold, color: Colors.blueGrey[900], letterSpacing: -0.5),
+        bodyTextStyle: TextStyle(fontSize: 18.0, color: Colors.blueGrey[700], fontWeight: FontWeight.w500),
         pageColor: Colors.transparent,
         contentMargin: const EdgeInsets.all(24),
       ),

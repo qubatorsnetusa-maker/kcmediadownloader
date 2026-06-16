@@ -10,11 +10,11 @@ class TermsAndConditionsScreen extends StatelessWidget {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text('Terms & Conditions', style: TextStyle(color: Colors.slate[900], fontWeight: FontWeight.bold)),
+        title: Text('Terms & Conditions', style: TextStyle(color: Colors.blueGrey[900], fontWeight: FontWeight.bold)),
         centerTitle: true,
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.slate[900]),
+        iconTheme: IconThemeData(color: Colors.blueGrey[900]),
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -38,17 +38,39 @@ class TermsAndConditionsScreen extends StatelessWidget {
                       children: [
                         Text(
                           'Terms and Conditions',
-                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.slate[900]),
+                          style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.blueGrey[900]),
                         ),
-                        const SizedBox(height: 16),
-                        Text(
-                          '1. Acceptance of Terms\nBy accessing and using this application, you agree to be bound by these Terms and Conditions and all applicable laws and regulations.\n\n'
-                          '2. Use License\nPermission is granted to use this app for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title.\n\n'
-                          '3. Disclaimer\nThe materials on this app are provided on an \'as is\' basis. The developers make no warranties, expressed or implied, and hereby disclaim and negate all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.\n\n'
-                          '4. Limitations\nIn no event shall the app or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on the app.\n\n'
-                          '5. Accuracy of Materials\nThe materials appearing on the app could include technical, typographical, or photographic errors. The developers do not warrant that any of the materials on its app are accurate, complete or current.\n\n'
-                          '6. Links\nThe developers have not reviewed all of the sites linked to its app and are not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by the developers of the site.',
-                          style: TextStyle(fontSize: 14, height: 1.5, color: Colors.slate[700], fontWeight: FontWeight.w500),
+                        const SizedBox(height: 24),
+                        _buildSection(
+                          '1. Acceptance of Terms',
+                          'By accessing and using this application, you agree to be bound by these Terms and Conditions and all applicable laws and regulations.',
+                        ),
+                        _buildSection(
+                          '2. Use License',
+                          'Permission is granted to use this app for personal, non-commercial transitory viewing only. This is the grant of a license, not a transfer of title.',
+                        ),
+                        _buildSection(
+                          '3. Disclaimer',
+                          'The materials on this app are provided on an \'as is\' basis. The developers make no warranties, expressed or implied, and hereby disclaim and negate all other warranties including, without limitation, implied warranties or conditions of merchantability, fitness for a particular purpose, or non-infringement of intellectual property or other violation of rights.',
+                        ),
+                        _buildSection(
+                          '4. Limitations',
+                          'In no event shall the app or its suppliers be liable for any damages (including, without limitation, damages for loss of data or profit, or due to business interruption) arising out of the use or inability to use the materials on the app.',
+                        ),
+                        _buildSection(
+                          '5. Links',
+                          'The developers have not reviewed all of the sites linked to its app and are not responsible for the contents of any such linked site. The inclusion of any link does not imply endorsement by the developers of the site.',
+                        ),
+                        const SizedBox(height: 32),
+                        const Center(
+                          child: Text(
+                            'Qubators Network 2026',
+                            style: TextStyle(
+                              color: Colors.blueGrey,
+                              fontSize: 12,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -58,6 +80,35 @@ class TermsAndConditionsScreen extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSection(String title, String content) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            content,
+            style: TextStyle(
+              fontSize: 14,
+              height: 1.5,
+              color: Colors.blueGrey[700],
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+        ],
       ),
     );
   }

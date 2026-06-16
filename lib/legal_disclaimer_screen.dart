@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'dart:ui';
 import 'home_screen.dart';
 import 'walkthrough_screen.dart';
@@ -10,6 +11,13 @@ class LegalDisclaimerScreen extends StatelessWidget {
   const LegalDisclaimerScreen({super.key, required this.showWalkthrough});
 
   Future<void> _acceptDisclaimer(BuildContext context) async {
+    // 1. Request Permissions
+    await [
+      Permission.storage,
+      Permission.photos,
+      Permission.videos,
+    ].request();
+
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('hasAcceptedLegal', true);
     if (context.mounted) {
@@ -37,7 +45,7 @@ class LegalDisclaimerScreen extends StatelessWidget {
                   'Legal Disclaimer',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                     fontWeight: FontWeight.bold,
-                    color: Colors.slate[900],
+                    color: Colors.blueGrey[900],
                     letterSpacing: -0.5,
                   ),
                 ),
@@ -63,7 +71,7 @@ class LegalDisclaimerScreen extends StatelessWidget {
                                 style: TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.slate[900],
+                                  color: Colors.blueGrey[900],
                                   height: 1.1,
                                 ),
                               ),
@@ -119,7 +127,7 @@ class LegalDisclaimerScreen extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.bold,
               fontSize: 18,
-              color: Colors.slate[900],
+              color: Colors.blueGrey[900],
               letterSpacing: 0.2,
             ),
           ),
@@ -128,7 +136,7 @@ class LegalDisclaimerScreen extends StatelessWidget {
             body,
             style: TextStyle(
               fontSize: 15,
-              color: Colors.slate[700],
+              color: Colors.blueGrey[700],
               height: 1.6,
               fontWeight: FontWeight.w500,
             ),

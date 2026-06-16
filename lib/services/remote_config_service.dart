@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter/foundation.dart';
 
 class RemoteConfigService {
   static final RemoteConfigService _instance = RemoteConfigService._internal();
@@ -82,7 +83,7 @@ class RemoteConfigService {
       }
       return cards;
     } catch (e) {
-      print('RemoteConfig Error parsing JSON: $e');
+      debugPrint('RemoteConfig Error parsing JSON: $e');
       // Return a single card as fallback on error
       return [
         {
