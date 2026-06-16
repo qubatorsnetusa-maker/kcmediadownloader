@@ -11,6 +11,13 @@ allprojects {
     }
 }
 
+// Ensure the build directory is at the project root so Flutter CLI can find artifacts
+rootProject.layout.buildDirectory.set(file("${project.projectDir}/../build"))
+
+subprojects {
+    project.layout.buildDirectory.set(file("${rootProject.layout.buildDirectory.get()}/${project.name}"))
+}
+
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
 }
