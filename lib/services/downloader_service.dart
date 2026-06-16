@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:gal/gal.dart';
 import 'package:path/path.dart' as p;
 
 class DownloaderService {
@@ -10,53 +10,57 @@ class DownloaderService {
   static Future<void> downloadFile({
     required String url,
     required String fileName,
+    required bool isVideo,
     Function(int, int)? onProgress,
     required Function(String) onSuccess,
     required Function(String) onError,
   }) async {
     try {
-      // Request permissions
-      if (Platform.isAndroid) {
-        final status = await Permission.storage.request();
-        if (!status.isGranted) {
-          // Check for Android 13+ permissions
-          final photos = await Permission.photos.request();
-          final videos = await Permission.videos.request();
-          if (!photos.isGranted && !videos.isGranted) {
-            onError('Storage permission denied');
-            return;
-          }
+      // 1. Check/Request Gallery Access
+      final hasAccess = await Gal.hasAccess(toAlbum: true);
+      if (!hasAccess) {
+        final granted = await Gal.requestAccess(toAlbum: true);
+        if (!granted) {
+          onError('Gallery access denied. Please enable it in settings.');
+          return;
         }
       }
 
-      Directory? directory;
-      if (Platform.isAndroid) {
-        // Try standard Download folder first
-        directory = Directory('/storage/emulated/0/Download');
-        if (!await directory.exists()) {
-          // Fallback to app-specific external storage
-          directory = await getExternalStorageDirectory();
-        }
-      } else {
-        directory = await getApplicationDocumentsDirectory();
-      }
+      // 2. Get temp directory for downloading
+      final tempDir = await getTemporaryDirectory();
+      final tempPath = p.join(tempDir.path, fileName);
 
-      if (directory == null) {
-        onError('Could not find download directory');
-        return;
-      }
-
-      final savePath = p.join(directory.path, fileName);
-
+      // 3. Download the file to temp location
       await _dio.download(
         url,
-        savePath,
+        tempPath,
         onReceiveProgress: onProgress,
       );
 
-      onSuccess(savePath);
+      // 4. Save to Gallery
+      if (isVideo) {
+        await Gal.putVideo(tempPath);
+      } else {
+        await Gal.putImage(tempPath);
+      }
+
+      // 5. Clean up temp file (optional, but good practice)
+      try {
+        final file = File(tempPath);
+        if (await file.exists()) {
+          await file.delete();
+        }
+      } catch (e) {
+        // Ignore deletion errors
+      }
+
+      onSuccess('Saved to Gallery');
     } catch (e) {
-      onError('Download failed: $e');
+      if (e is GalException) {
+        onError('Gallery Error: ${e.type.name}');
+      } else {
+        onError('Download failed: $e');
+      }
     }
   }
 }

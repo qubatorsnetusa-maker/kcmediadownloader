@@ -87,6 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
     await DownloaderService.downloadFile(
       url: _result!.url!,
       fileName: fileName,
+      isVideo: _result!.type == MediaType.video,
       onProgress: (count, total) {
         if (total > 0) {
           setState(() {

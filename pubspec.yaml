@@ -46,6 +46,7 @@ dependencies:
   firebase_remote_config: ^6.5.2
   shared_preferences: ^2.5.5
   introduction_screen: ^4.0.0
+  gal: ^2.3.2
 
 dev_dependencies:
   flutter_test:
