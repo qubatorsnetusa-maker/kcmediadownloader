@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "375372672536",
+    "project_id": "kc-media-downloader",
+    "storage_bucket": "kc-media-downloader.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:375372672536:android:614827745ad9569b5c9d6d",
+        "android_client_info": {
+          "package_name": "com.qubators.kcmediadownloader"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCZQKbOnIZul4QYEj95q17fmwQTINu4wg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
