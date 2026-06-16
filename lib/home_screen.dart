@@ -127,7 +127,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   TextField(
                     controller: _urlController,
                     decoration: const InputDecoration(
-                      hintText: 'Enter KingsChat or CeFlix link...',
+                      hintText: 'www.kingsch.at/p/VjQ3Zjd',
                       prefixIcon: Icon(Icons.link),
                     ),
                   ),

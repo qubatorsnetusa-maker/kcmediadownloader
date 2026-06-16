@@ -1,4 +1,4 @@
-package com.qubators.kc_media_downloader
+package com.qubators.kcmediadownloader
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,29 +1,16 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import '../services/remote_config_service.dart';
 
 class AdSlider extends StatelessWidget {
   const AdSlider({super.key});
 
-  final List<Map<String, String>> ads = const [
-    {
-      'title': 'Download Faster with KC Downloader',
-      'subtitle': 'The best tool for KingsChat media.',
-      'color': '0xFF2196F3'
-    },
-    {
-      'title': 'CeFlix Content Offline',
-      'subtitle': 'Save your favorite videos easily.',
-      'color': '0xFF4CAF50'
-    },
-    {
-      'title': 'Simple & Secure',
-      'subtitle': 'Your privacy is our priority.',
-      'color': '0xFFFF9800'
-    },
-  ];
-
   @override
   Widget build(BuildContext context) {
+    final ads = RemoteConfigService().getAdCards();
+
+    if (ads.isEmpty) return const SizedBox.shrink();
+
     return CarouselSlider(
       options: CarouselOptions(
         height: 120.0,
