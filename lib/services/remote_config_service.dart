@@ -66,7 +66,21 @@ class RemoteConfigService {
 
     try {
       final List<dynamic> decoded = jsonDecode(jsonStr);
-      return decoded.map((item) => Map<String, String>.from(item)).toList();
+      final List<Map<String, String>> cards = [];
+
+      for (var item in decoded) {
+        if (item is Map) {
+          cards.add(item.map((key, value) => MapEntry(key.toString(), value.toString())));
+        } else if (item is List) {
+          // Handle nested lists like [[{}], [{}]]
+          for (var subItem in item) {
+            if (subItem is Map) {
+              cards.add(subItem.map((key, value) => MapEntry(key.toString(), value.toString())));
+            }
+          }
+        }
+      }
+      return cards;
     } catch (e) {
       print('RemoteConfig Error parsing JSON: $e');
       // Return a single card as fallback on error
