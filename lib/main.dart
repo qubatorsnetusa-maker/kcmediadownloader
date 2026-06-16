@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'services/remote_config_service.dart';
 import 'home_screen.dart';
 import 'walkthrough_screen.dart';
+import 'legal_disclaimer_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,13 +13,22 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final showWalkthrough = prefs.getBool('showWalkthrough') ?? true;
+  final hasAcceptedLegal = prefs.getBool('hasAcceptedLegal') ?? false;
 
-  runApp(KCMediaDownloaderApp(showWalkthrough: showWalkthrough));
+  runApp(KCMediaDownloaderApp(
+    showWalkthrough: showWalkthrough,
+    hasAcceptedLegal: hasAcceptedLegal,
+  ));
 }
 
 class KCMediaDownloaderApp extends StatelessWidget {
   final bool showWalkthrough;
-  const KCMediaDownloaderApp({super.key, required this.showWalkthrough});
+  final bool hasAcceptedLegal;
+  const KCMediaDownloaderApp({
+    super.key,
+    required this.showWalkthrough,
+    required this.hasAcceptedLegal,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -36,7 +46,9 @@ class KCMediaDownloaderApp extends StatelessWidget {
           fillColor: Colors.grey[100],
         ),
       ),
-      home: showWalkthrough ? const WalkthroughScreen() : const HomeScreen(),
+      home: !hasAcceptedLegal
+          ? LegalDisclaimerScreen(showWalkthrough: showWalkthrough)
+          : (showWalkthrough ? const WalkthroughScreen() : const HomeScreen()),
     );
   }
 }
