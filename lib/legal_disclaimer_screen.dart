@@ -3,7 +3,6 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:ui';
 import 'home_screen.dart';
 import 'walkthrough_screen.dart';
-import 'terms_and_conditions_screen.dart';
 
 class LegalDisclaimerScreen extends StatelessWidget {
   final bool showWalkthrough;
@@ -26,16 +25,15 @@ class LegalDisclaimerScreen extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Apple-style Dynamic Background
+          // Orange and Purple Gradient Background
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFF64B5F6), // Blue
-                  Color(0xFF81C784), // Green
-                  Color(0xFFFFB74D), // Orange
+                  Color(0xFFFF9800), // Orange
+                  Color(0xFF9C27B0), // Purple
                 ],
               ),
             ),
@@ -61,11 +59,11 @@ class LegalDisclaimerScreen extends StatelessWidget {
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(30),
                       child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 20, sigmaY: 20),
+                        filter: ImageFilter.blur(sigmaX: 40, sigmaY: 40), // Increased blur
                         child: Container(
                           padding: const EdgeInsets.all(24),
                           decoration: BoxDecoration(
-                            color: Colors.white.withOpacity(0.15),
+                            color: Colors.white.withOpacity(0.1), // Reduced opacity for more effect
                             borderRadius: BorderRadius.circular(30),
                             border: Border.all(color: Colors.white.withOpacity(0.2)),
                           ),
@@ -80,23 +78,23 @@ class LegalDisclaimerScreen extends StatelessWidget {
                                 const SizedBox(height: 24),
                                 _buildGlassBullet(
                                   'User Responsibility:',
-                                  'You are solely responsible for any media files you download through this application.',
+                                  'You are solely responsible for any media files you download through this application. This app serves as a tool only and does not host, store, or distribute any content.',
                                 ),
                                 _buildGlassBullet(
                                   'Permission & Rights:',
-                                  'You confirm that you have obtained all necessary permissions from the copyright holders.',
+                                  'You confirm that you have obtained all necessary permissions, licenses, or authorizations from the copyright holders before downloading any media files. It is your responsibility to ensure compliance with applicable copyright laws, terms of service, and intellectual property rights.',
                                 ),
                                 _buildGlassBullet(
                                   'No Liability:',
-                                  'The developers shall not be held liable for any legal consequences or damages.',
+                                  'This application and its developers shall not be held liable for any legal consequences, damages, or losses arising from your use of downloaded content, including but not limited to copyright infringement claims, misuse, or unauthorized distribution.',
                                 ),
                                 _buildGlassBullet(
                                   'Lawful Use:',
-                                  'You agree to use downloaded media files for lawful purposes only.',
+                                  'You agree to use downloaded media files for lawful purposes only, in accordance with your local jurisdiction\'s laws and regulations.',
                                 ),
                                 _buildGlassBullet(
                                   'Indemnification:',
-                                  'You agree to indemnify and hold harmless the developers from any claims.',
+                                  'You agree to indemnify and hold harmless this application, its developers, and affiliates from any claims, damages, or legal actions resulting from your use of this service.',
                                 ),
                               ],
                             ),
@@ -108,18 +106,18 @@ class LegalDisclaimerScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                  padding: const EdgeInsets.fromLTRB(20, 0, 20, 30),
                   child: ClipRRect(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(30),
                     child: BackdropFilter(
                       filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10),
                       child: ElevatedButton(
                         onPressed: () => _acceptDisclaimer(context),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.white.withOpacity(0.8),
-                          foregroundColor: Colors.blue[900],
-                          minimumSize: const Size(double.infinity, 56),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                          backgroundColor: Colors.white.withOpacity(0.85),
+                          foregroundColor: const Color(0xFF9C27B0), // Purple text
+                          minimumSize: const Size(double.infinity, 60),
+                          shape: const StadiumBorder(), // Full rounded edges
                           elevation: 0,
                         ),
                         child: const Text('I Accept & Agree', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
@@ -127,25 +125,6 @@ class LegalDisclaimerScreen extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                // Terms & Conditions link at the very bottom
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const TermsAndConditionsScreen()),
-                    );
-                  },
-                  child: const Text(
-                    'Terms and Conditions',
-                    style: TextStyle(
-                      color: Colors.white,
-                      decoration: TextDecoration.underline,
-                      fontSize: 14,
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
               ],
             ),
           ),
@@ -162,7 +141,7 @@ class LegalDisclaimerScreen extends StatelessWidget {
         children: [
           Text(title, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white)),
           const SizedBox(height: 4),
-          Text(body, style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.8))),
+          Text(body, style: TextStyle(fontSize: 14, color: Colors.white.withOpacity(0.9))),
         ],
       ),
     );

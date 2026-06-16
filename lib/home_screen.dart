@@ -3,6 +3,7 @@ import 'widgets/ad_slider.dart';
 import 'models/media_info.dart';
 import 'services/media_extractor.dart';
 import 'services/downloader_service.dart';
+import 'terms_and_conditions_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -151,9 +152,26 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           const Padding(
-            padding: EdgeInsets.only(bottom: 16.0),
+            padding: EdgeInsets.only(bottom: 8.0),
             child: AdSlider(),
           ),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TermsAndConditionsScreen()),
+              );
+            },
+            child: Text(
+              'Terms and Conditions',
+              style: TextStyle(
+                color: Colors.grey[600],
+                decoration: TextDecoration.underline,
+                fontSize: 12,
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
         ],
       ),
     );
