@@ -105,7 +105,7 @@ class DownloaderService {
           debugPrint('Deleted temporary file: $filePath');
         }
       } on GalException catch (ge) {
-        debugPrint('GalException saving to gallery: ${ge.type} - ${ge.message}');
+        debugPrint('GalException saving to gallery: ${ge.type}');
       } catch (e) {
         debugPrint('General error saving to gallery: $e');
       }
